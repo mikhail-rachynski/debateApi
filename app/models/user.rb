@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   validates :username, presence: true
 
-  has_one :book, dependent: :destroy
+  has_many :game_users
+  has_many :games, through: :game_users
 end
