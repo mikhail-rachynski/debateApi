@@ -179,7 +179,6 @@
     </option>
   </component>
   <component name="RailwaysModuleConfiguration">
-    <option name="routesTaskName" value="app:routes" />
     <option name="environment" value="development" />
   </component>
 </module>

@@ -7,7 +7,7 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def show
-    @users_count = User.take(params[:id])
+    @users_count = User.find(params[:id])
     json_response(@users_count)
   end
 end
