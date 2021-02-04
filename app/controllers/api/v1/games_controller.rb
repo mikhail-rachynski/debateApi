@@ -2,7 +2,6 @@ class Api::V1::GamesController < ApplicationController
   def index
     @games = Game.all.order(:id)
     json_response(@games)
-
   end
 
   def show
@@ -16,11 +15,21 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def add_player
+    @player_limit = 9
     @game = Game.find(params[:id])
     @user = User.find(params[:user_id])
-    GameUser.create(game: @game, user: @user, role: params[:role])
-    json_response( :created)
+    if @game.users.count < @player_limit
+      GameUser.create(game: @game, user: @user, role: params[:role])
+    end
+    @players_left = @player_limit - @game.users.count
+    json_response(@players_left, :created)
   end
+
+  def status
+    @game = Game.find(params[:id])
+    json_response(@game.kind)
+  end
+
 
   private
 
