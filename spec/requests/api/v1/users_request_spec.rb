@@ -25,6 +25,7 @@ RSpec.describe "api::V1::Users", type: :request do
 
   describe 'POST api/v1/games/:game_id/users/:id/delete_player' do
     context 'when delete user from game' do
+      before { post "http://localhost:3000/api/v1/games/#{game_id}/add_player", params: { user_id: user_id, role: :player } }
       before { post "http://localhost:3000/api/v1/games/#{game_id}/users/#{user_id}/delete_player" }
       it 'return status code 204' do
         expect(response).to have_http_status(204)

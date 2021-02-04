@@ -27,7 +27,7 @@ class Api::V1::GamesController < ApplicationController
 
   def status
     @game = Game.find(params[:id])
-    json_response(@game.kind)
+    json_response(@game.status)
   end
 
 
