@@ -1,17 +1,27 @@
 class Api::V1::GamesController < ApplicationController
   def index
     @games = Game.all.order(:id)
-    json_response(@games)
+    render 'index.json.jbuilder'
   end
 
   def show
     @game = Game.find(params[:id])
-    json_response(@game)
+    render 'show.json.jbuilder'
   end
 
   def create
     @new_game = Game.create(items_params)
     json_response(@new_game, :created)
+  end
+
+  def update
+    @game = Game.find(params[:id])
+    @game.update(items_params)
+  end
+
+  def destroy
+    @game = Game.find(params[:id])
+    @game.destroy
   end
 
   def add_player
