@@ -35,6 +35,19 @@ class Api::V1::GamesController < ApplicationController
     json_response(@players_left, :created)
   end
 
+  def delete_player
+    @game = Game.find(params[:id])
+    if @game.status == "formation"
+      @game_user = GameUser.find_by game_id: params[:id], user_id: params[:user_id]
+      unless @game_user.nil?
+        @game_user.destroy
+        head :no_content
+      else
+        head :not_found
+      end
+    end
+  end
+
   def status
     @game = Game.find(params[:id])
     json_response(@game.status)
@@ -46,4 +59,5 @@ class Api::V1::GamesController < ApplicationController
   def items_params
     params.permit(:topic, :kind )
   end
+
 end

@@ -27,18 +27,7 @@ class Api::V1::UsersController < ApplicationController
     @user.destroy
   end
 
-  def delete_player
-    @game = Game.find(params[:game_id])
-    if @game.status == "formation"
-      @game_user = GameUser.find_by game_id: params[:game_id], user_id: params[:id]
-      unless @game_user.nil?
-        @game_user.destroy
-        head :no_content
-      else
-        head :not_found
-      end
-    end
-  end
+
 
   private
 

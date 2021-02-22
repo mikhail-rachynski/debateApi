@@ -33,4 +33,14 @@ RSpec.describe "Api::V1::Games", type: :request do
     end
   end
 
+  describe 'POST api/v1/games#delete_player' do
+    let(:valid_attributes) { { user_id: user_id } }
+    context 'when request attributes are valid' do
+      before { post "http://localhost:3000/api/v1/games/#{game_id}/delete_player", params: valid_attributes }
+      it 'returns status code 201' do
+        expect(response).to have_http_status(404)
+      end
+    end
+  end
+
 end
