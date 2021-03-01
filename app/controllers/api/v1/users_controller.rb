@@ -1,4 +1,5 @@
 class Api::V1::UsersController < ApplicationController
+  before_action :authenticate_user!
 
   def index
     @users = User.all.order(:id)
@@ -26,8 +27,6 @@ class Api::V1::UsersController < ApplicationController
     @user = User.find(params[:id])
     @user.destroy
   end
-
-
 
   private
 
