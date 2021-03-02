@@ -23,6 +23,7 @@ gem 'dotenv-rails', groups: [:development, :test]
 gem 'devise'
 gem 'jwt'
 gem 'bcrypt', '~> 3.1.7'
+gem 'faker', :git => 'https://github.com/faker-ruby/faker.git', :branch => 'master'
 
 
 
@@ -53,7 +54,6 @@ group :test do
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
   gem 'shoulda-matchers'
-  gem 'faker'
   gem 'database_cleaner'
 end
 

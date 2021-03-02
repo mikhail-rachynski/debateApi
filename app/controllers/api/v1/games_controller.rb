@@ -26,13 +26,21 @@ class Api::V1::GamesController < ApplicationController
 
   def add_player
     @player_limit = 9
+    user_id = params[:user_id]
     @game = Game.find(params[:id])
-    @user = User.find(params[:user_id])
-    if @game.users.count < @player_limit
-      GameUser.create(game: @game, user: @user, role: params[:role])
+    @user = User.find(user_id)
+    if @game.users.find { |i| i[:id] == user_id.to_i} == nil
+      if @game.users.count < @player_limit
+        GameUser.create(game: @game, user: @user)
+        set_status 0 if @game.users.count == 1
+        @players_left = @player_limit - @game.users.count
+        json_response(@players_left, :created)
+        set_status 1 if @game.users.count == @player_limit
+      end
+    else
+      json_response({error: "User has already been added"}, :ok)
     end
-    @players_left = @player_limit - @game.users.count
-    json_response(@players_left, :created)
+
   end
 
   def delete_player
@@ -48,16 +56,31 @@ class Api::V1::GamesController < ApplicationController
     end
   end
 
+  def set_status(type)
+    case type
+    when 0
+      @game.update(status: 0)
+    when 1
+      @game.update(status: 1)
+    when 2
+      @game.update(status: 2)
+      start_game
+    end
+  end
+
   def status
     @game = Game.find(params[:id])
     json_response(@game.status)
   end
 
+  def start_game
+    p 'GAME STARTED'
+  end
 
   private
 
   def items_params
-    params.permit(:topic, :kind )
+    params.permit(:topic, :kind, :status, :score )
   end
 
 end
