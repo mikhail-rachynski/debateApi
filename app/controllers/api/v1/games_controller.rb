@@ -29,23 +29,27 @@ class Api::V1::GamesController < ApplicationController
     user_id = params[:user_id]
     @game = Game.find(params[:id])
     @user = User.find(user_id)
-    if @game.users.find { |i| i[:id] == user_id.to_i} == nil
-      if @game.users.count < @player_limit
+
+    find_duplicate_user = @game.users.find_by id: user_id.to_i
+    if find_duplicate_user.nil?
+      if @game.users.count < @player_limit && @game.status == Game.statuses.key(0)
         GameUser.create(game: @game, user: @user)
-        set_status 0 if @game.users.count == 1
         @players_left = @player_limit - @game.users.count
         json_response(@players_left, :created)
-        set_status 1 if @game.users.count == @player_limit
+        start_game if @game.users.count == @player_limit
+      else
+        @error = "Players limit reached"
+        render 'api/v1/error.json.jbuilder'
       end
     else
-      json_response({error: "User has already been added"}, :ok)
+      @error = "User has already been added"
+      render 'api/v1/error.json.jbuilder'
     end
-
   end
 
   def delete_player
     @game = Game.find(params[:id])
-    if @game.status == "formation"
+    if @game.status == Game.statuses.key(0)
       @game_user = GameUser.find_by game_id: params[:id], user_id: params[:user_id]
       unless @game_user.nil?
         @game_user.destroy
@@ -56,15 +60,11 @@ class Api::V1::GamesController < ApplicationController
     end
   end
 
-  def set_status(type)
-    case type
-    when 0
-      @game.update(status: 0)
-    when 1
-      @game.update(status: 1)
-    when 2
-      @game.update(status: 2)
-      start_game
+  def set_users_roles
+    count = 0
+    GameUser.where(game_id: @game.id).find_each do |item|
+      item.update(role: GameUser.roles.key(count))
+      count += 1
     end
   end
 
@@ -74,13 +74,14 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def start_game
-    p 'GAME STARTED'
+    set_users_roles
+    @game.update(status: 1)
   end
 
   private
 
   def items_params
-    params.permit(:topic, :kind, :status, :score )
+    params.permit(:topic, :kind, :score )
   end
 
 end

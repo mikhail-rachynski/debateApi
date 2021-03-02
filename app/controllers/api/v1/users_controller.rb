@@ -10,7 +10,6 @@ class Api::V1::UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
     render 'show.json.jbuilder'
-    # json_response(@user)
   end
 
   def create
