@@ -5,9 +5,7 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-count = 0
-while count < 9
-  User.create(email: Faker::Internet.email, password: Faker::Internet.password)
-  count+=1
+User.all.each do |item|
+  item.update(name: Faker::Internet.username)
 end
 

@@ -5,7 +5,7 @@ class SessionsController < Devise::SessionsController
 
     if user && user.valid_password?(sign_in_params[:password])
       token = current_user.generate_jwt
-      render json: {token: token, userId: user.id}
+      render json: {token: token, current_user: user}
     else
       render json: { errors: { 'email or password' => ['is invalid'] } }, status: :unprocessable_entity
     end
@@ -13,7 +13,7 @@ class SessionsController < Devise::SessionsController
 
   def is_logged_in?
     if signed_in?
-      render json: current_user
+      render json: {current_user: current_user}
     end
   end
 

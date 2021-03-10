@@ -1,5 +1,5 @@
 class Game < ApplicationRecord
-  enum status: [:formation, :progress, :break, :finished]
+  enum status: [:waiting, :progress, :pause, :finished]
 
   has_many :game_users, dependent: :destroy
   has_many :users, through: :game_users
