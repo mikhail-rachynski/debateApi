@@ -85,6 +85,18 @@ class Api::V1::GamesController < ApplicationController
     Round.create(game: @game)
   end
 
+  def push_speech
+    round = Round.find(params[:round])
+    speech = Speech.create(user: current_user, round: round, speech: params[:text])
+    json_response('',:ok)
+  end
+
+  def get_speech
+    round = Round.find(params[:round])
+    speech = round.speech
+    json_response(speech)
+  end
+
   private
 
   def items_params
