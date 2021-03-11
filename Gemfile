@@ -7,7 +7,7 @@ ruby '2.7.2'
 gem 'rails', '~> 6.1.1'
 gem 'rack-cors'
 # Use postgresql as the database for Active Record
-gem 'pg', '~> 1.2.3'
+gem 'pg'
 # Use Puma as the app server
 gem 'puma', '~> 5.0'
 # Use SCSS for stylesheets
@@ -23,7 +23,7 @@ gem 'dotenv-rails', groups: [:development, :test]
 gem 'devise'
 gem 'jwt'
 gem 'bcrypt', '~> 3.1.7'
-gem 'faker', :git => 'https://github.com/faker-ruby/faker.git', :branch => 'master'
+gem 'faker'
 
 
 

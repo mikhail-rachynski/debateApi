@@ -37,7 +37,8 @@ class Api::V1::GamesController < ApplicationController
         GameUser.create(game: @game, user: @user)
         players_left = player_limit - @game.users.count
         start_game if @game.users.count == player_limit
-        render 'api/v1/games/show.json.jbuilder'
+        @games = Game.all.order(:id)
+        render 'index.json.jbuilder'
       else
         @error = "Players limit reached"
         render 'api/v1/errors/error.json.jbuilder'
@@ -76,7 +77,12 @@ class Api::V1::GamesController < ApplicationController
 
   def start_game
     set_users_roles
+    set_round
     @game.update(status: 1)
+  end
+
+  def set_round
+    Round.create(game: @game)
   end
 
   private
