@@ -82,19 +82,26 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def set_round
-    Round.create(game: @game)
+    Round.create(game: @game, round_type: Round.round_types.key(0))
+    Round.create(game: @game, round_type: Round.round_types.key(1))
+    Round.create(game: @game, round_type: Round.round_types.key(2))
+    Round.create(game: @game, round_type: Round.round_types.key(3))
+  end
+
+  def get_rounds
+    game = Game.find(params[:id])
+    json_response(game.rounds)
   end
 
   def push_speech
-    round = Round.find(params[:round])
-    speech = Speech.create(user: current_user, round: round, speech: params[:text])
-    json_response('',:ok)
+    @round = Round.find(params[:round])
+    Speech.create(user: current_user, round: @round, speech: params[:text])
+    render 'speech.json.jbuilder'
   end
 
   def get_speech
-    round = Round.find(params[:round])
-    speech = round.speech
-    json_response(speech)
+    @round = Round.find(params[:round])
+    render 'speech.json.jbuilder'
   end
 
   private
