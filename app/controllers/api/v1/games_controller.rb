@@ -1,5 +1,5 @@
 class Api::V1::GamesController < ApplicationController
-  before_action :authenticate_user!, only: [:new, :create, :destroy, :update]
+  before_action :authenticate_user!, only: [:new, :create, :destroy, :update, :add_player, :delete_player]
 
   def index
     @games = Game.all.order(:id)
@@ -12,8 +12,8 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def create
-    @new_game = Game.create(items_params)
-    json_response(@new_game, :created)
+    current_user.games.create(topic: params[:topic])
+    json_response("ok", :created)
   end
 
   def update
@@ -91,23 +91,6 @@ class Api::V1::GamesController < ApplicationController
   def get_rounds
     game = Game.find(params[:id])
     json_response(game.rounds)
-  end
-
-  def push_speech
-    @round = Round.find(params[:round])
-    Speech.create(user: current_user, round: @round, speech: params[:text])
-    render 'speech.json.jbuilder'
-  end
-
-  def get_speech
-    @round = Round.find(params[:round])
-    render 'speech.json.jbuilder'
-  end
-
-  private
-
-  def items_params
-    params.permit(:topic, :kind, :score )
   end
 
 end

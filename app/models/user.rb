@@ -10,6 +10,7 @@ class User < ApplicationRecord
   has_many :game_users, dependent: :destroy
   has_many :games, through: :game_users
   has_many :speeches, dependent: :destroy
+  has_many :games
 
   scope :player, -> {joins(:games).merge(GameUser.player)}
   scope :referee, -> {joins(:games).merge(GameUser.referee)}

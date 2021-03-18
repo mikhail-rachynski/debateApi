@@ -5,6 +5,7 @@ json.games @games do |game|
   json.kind game.kind
   json.score game.score
   json.users_count game.users.count
+  json.creator game.user_id
   json.users game.users do |user|
     json.id user.id
     json.name user.name

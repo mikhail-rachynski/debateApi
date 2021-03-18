@@ -19,9 +19,8 @@ Rails.application.routes.draw do
         post 'delete_player', on: :member
         get 'status', on: :member
         get 'get_rounds', on: :member
-        post 'push_speech', on: :member
-        get 'get_speech', on: :member
       end
+      resources :speeches
     end
   end
 
