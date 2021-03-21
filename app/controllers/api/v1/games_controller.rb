@@ -12,13 +12,12 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def create
-    current_user.games.create(topic: params[:topic])
+    current_user.games.create(items_params)
     json_response("ok", :created)
   end
 
   def update
-    @game = Game.find(params[:id])
-    @game.update(items_params)
+    current_user.games.find(params[:id]).update(items_params)
   end
 
   def destroy
@@ -28,13 +27,11 @@ class Api::V1::GamesController < ApplicationController
 
   def add_player
     player_limit = 9
-    user_id = params[:user_id]
     @game = Game.find(params[:id])
-    @user = User.find(user_id)
-    find_duplicate_user = @game.users.find_by id: user_id.to_i
+    find_duplicate_user = @game.users.find_by id: current_user.id
     if find_duplicate_user.nil?
       if @game.users.count < player_limit && @game.status == Game.statuses.key(0)
-        GameUser.create(game: @game, user: @user)
+        GameUser.create(game: @game, user: current_user)
         players_left = player_limit - @game.users.count
         start_game if @game.users.count == player_limit
         @games = Game.all.order(:id)
@@ -91,6 +88,12 @@ class Api::V1::GamesController < ApplicationController
   def get_rounds
     game = Game.find(params[:id])
     json_response(game.rounds)
+  end
+
+  private
+
+  def items_params
+    params.permit(:topic, :kind, :score )
   end
 
 end
