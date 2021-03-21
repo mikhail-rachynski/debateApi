@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       resources :users
       resources :games do
         post 'add_player', on: :member
-        post 'delete_player', on: :member
+        delete 'delete_player', on: :member
         get 'status', on: :member
         get 'get_rounds', on: :member
       end
