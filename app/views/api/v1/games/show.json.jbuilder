@@ -8,4 +8,5 @@ json.creator @game.user_id
 json.users @game.users do |user|
   json.id user.id
   json.name user.name
+  json.role user.game_users.find_by(game: @game).role
 end
