@@ -48,6 +48,15 @@ class Api::V1::GamesController < ApplicationController
     json_response(game.rounds)
   end
 
+  def set_rating
+    round = Round.find(params[:round_id])
+    round.set_rating(params[:value]) if
+        current_user
+            .game_users
+            .find_by(game: round.game)
+            .role == GameUser.roles.key(0)
+  end
+
   private
 
   def items_params
