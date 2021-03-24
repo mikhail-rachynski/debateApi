@@ -7,12 +7,12 @@ class Game < ApplicationRecord
 
   has_many :rounds, dependent: :destroy
 
-  def add_player(current_user)
+  def add_player(current_user, role = nil)
     player_limit = 9
     find_duplicate_user = self.users.find_by id: current_user
     if find_duplicate_user.nil?
       if self.users.count < player_limit && self.status == Game.statuses.key(0)
-        GameUser.create(game: self, user_id: current_user)
+        GameUser.create(game: self, user_id: current_user, role: role)
         start_game if self.users.count == player_limit
         return @games = Game.all.order(:id)
       else
@@ -50,9 +50,12 @@ class Game < ApplicationRecord
   end
 
   def set_round
-    Round.create(game: self, round_type: Round.round_types.key(0))
-    Round.create(game: self, round_type: Round.round_types.key(1))
-    Round.create(game: self, round_type: Round.round_types.key(2))
-    Round.create(game: self, round_type: Round.round_types.key(3))
+    if self.rounds.length === 0
+      Round.create(game: self, round_type: Round.round_types.key(0))
+      Round.create(game: self, round_type: Round.round_types.key(1))
+      Round.create(game: self, round_type: Round.round_types.key(2))
+      Round.create(game: self, round_type: Round.round_types.key(3))
+    end
+
   end
 end

@@ -13,6 +13,7 @@ class Api::V1::GamesController < ApplicationController
 
   def create
     current_user.games.create(items_params)
+        .add_player(current_user.id, GameUser.roles.key(0))
     @games = Game.all.order(:id)
     render 'index.json.jbuilder'
   end
