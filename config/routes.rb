@@ -25,6 +25,8 @@ Rails.application.routes.draw do
     end
   end
 
+  match '*all', controller: 'application', action: 'cors_preflight_check', via: [:options]
+
   resources :messages, only: [:index, :create]
   mount ActionCable.server => '/cable'
 end
