@@ -14,6 +14,8 @@ class SessionsController < Devise::SessionsController
   def is_logged_in?
     if signed_in?
       render json: {current_user: current_user}
+    else
+      render json: {error: "Not authorized"}
     end
   end
 

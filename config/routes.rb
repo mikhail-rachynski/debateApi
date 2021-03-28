@@ -18,12 +18,15 @@ Rails.application.routes.draw do
         post 'add_player', on: :member
         delete 'delete_player', on: :member
         get 'status', on: :member
-        get 'get_rounds', on: :member
+      end
+      resources :rounds do
         post 'set_rating', on: :member
       end
       resources :speeches
     end
   end
+
+  match '*all', controller: 'application', action: 'cors_preflight_check', via: [:options]
 
   resources :messages, only: [:index, :create]
   mount ActionCable.server => '/cable'
