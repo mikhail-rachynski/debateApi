@@ -7,12 +7,12 @@ class Game < ApplicationRecord
 
   has_many :rounds, dependent: :destroy
 
-  def add_player(current_user, role = nil)
+  def add_player(current_user)
     player_limit = 9
     find_duplicate_user = self.users.find_by id: current_user
     if find_duplicate_user.nil?
       if self.users.count < player_limit && self.status == Game.statuses.key(0)
-        GameUser.create(game: self, user_id: current_user, role: role)
+        GameUser.create(game: self, user_id: current_user)
         start_game if self.users.count == player_limit
         return @games = Game.all.order(:id)
       else
@@ -36,8 +36,9 @@ class Game < ApplicationRecord
 
   def set_users_roles
     count = 0
+    random_roles = GameUser.roles.to_a.shuffle
     GameUser.where(game_id: self.id).find_each do |item|
-      item.update(role: GameUser.roles.key(count))
+      item.update(role: random_roles[count][0])
       count += 1
     end
   end
@@ -45,17 +46,27 @@ class Game < ApplicationRecord
 
   def start_game
     set_users_roles
-    set_round
+    play_round(self)
     self.update(status: 1)
   end
 
-  def set_round
-    if self.rounds.length === 0
-      Round.create(game: self, round_type: Round.round_types.key(0))
-      Round.create(game: self, round_type: Round.round_types.key(1))
-      Round.create(game: self, round_type: Round.round_types.key(2))
-      Round.create(game: self, round_type: Round.round_types.key(3))
+  def play_round(game)
+    thisGame = Game.find(game.id)
+    rounds_count = thisGame.rounds.length
+    if rounds_count < 4
+      Round.new(game: thisGame).set_round(rounds_count)
+      Thread.new do
+        round_duration = 300
+        end_time = Time.now.to_i+round_duration
+        while true
+          if Time.now.to_i > end_time
+            play_round(thisGame)
+            break
+          end
+          sleep 1
+        end
+      end
     end
-
   end
+
 end
