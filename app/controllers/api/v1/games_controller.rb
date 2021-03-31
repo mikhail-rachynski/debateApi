@@ -13,7 +13,6 @@ class Api::V1::GamesController < ApplicationController
 
   def create
     current_user.games.create(items_params)
-        .add_player(current_user.id, GameUser.roles.key(0))
     @games = Game.all.order(:id)
     render 'index.json.jbuilder'
   end
@@ -41,20 +40,6 @@ class Api::V1::GamesController < ApplicationController
   def status
     @game = Game.find(params[:id])
     json_response(@game.status)
-  end
-
-  def get_rounds
-    game = Game.find(params[:id])
-    json_response(game.rounds)
-  end
-
-  def set_rating
-    round = Round.find(params[:round_id])
-    round.set_rating(params[:value]) if
-        current_user
-            .game_users
-            .find_by(game: round.game)
-            .role == GameUser.roles.key(0)
   end
 
   private
