@@ -43,7 +43,6 @@ class Game < ApplicationRecord
     end
   end
 
-
   def start_game
     set_users_roles
     play_round(self)
@@ -53,10 +52,10 @@ class Game < ApplicationRecord
   def play_round(game)
     thisGame = Game.find(game.id)
     rounds_count = thisGame.rounds.length
-    if rounds_count < 4
+    if rounds_count < 8
       Round.new(game: thisGame).set_round(rounds_count)
       Thread.new do
-        round_duration = 300
+        round_duration = 3
         end_time = Time.now.to_i+round_duration
         while true
           if Time.now.to_i > end_time
@@ -66,6 +65,8 @@ class Game < ApplicationRecord
           sleep 1
         end
       end
+    elsif rounds_count == 8
+      self.update(status: 3)
     end
   end
 
