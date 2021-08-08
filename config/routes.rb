@@ -10,7 +10,6 @@ Rails.application.routes.draw do
     get 'api/v1/logged_in', to: 'sessions#is_logged_in?'
   end
 
-  root to: "home#index"
   namespace :api do
     namespace :v1 do
       resources :users
@@ -28,6 +27,4 @@ Rails.application.routes.draw do
 
   match '*all', controller: 'application', action: 'cors_preflight_check', via: [:options]
 
-  resources :messages, only: [:index, :create]
-  mount ActionCable.server => '/cable'
 end

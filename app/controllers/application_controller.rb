@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::API
   include Response
+  include Wssender
+
   respond_to :json
   before_action :process_token
   before_action :cors_set_access_control_headers
@@ -32,6 +34,7 @@ class ApplicationController < ActionController::API
         # @error = "Not authorized"
         # @error_code = 401
         # render 'api/v1/errors/error.json.jbuilder'
+
       end
     end
   end

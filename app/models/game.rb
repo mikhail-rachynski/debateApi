@@ -8,7 +8,7 @@ class Game < ApplicationRecord
   has_many :rounds, dependent: :destroy
 
   def add_player(current_user)
-    player_limit = 9
+    player_limit = 1
     find_duplicate_user = self.users.find_by id: current_user
     if find_duplicate_user.nil?
       if self.users.count < player_limit && self.status == Game.statuses.key(0)
@@ -47,15 +47,19 @@ class Game < ApplicationRecord
     set_users_roles
     play_round(self)
     self.update(status: 1)
+    sendStatusToWebSocket "set_start_game_status", self
   end
 
   def play_round(game)
     thisGame = Game.find(game.id)
     rounds_count = thisGame.rounds.length
+    round_duration = 10
+
     if rounds_count < 8
-      Round.new(game: thisGame).set_round(rounds_count)
+      round = Round.new(game: thisGame)
+      round.set_round(rounds_count)
+      sendStartedRoundToWebSocket "round_start", round, round_duration
       Thread.new do
-        round_duration = 3
         end_time = Time.now.to_i+round_duration
         while true
           if Time.now.to_i > end_time
@@ -67,6 +71,7 @@ class Game < ApplicationRecord
       end
     elsif rounds_count == 8
       self.update(status: 3)
+      sendStatusToWebSocket "set_finish_game_status", thisGame
     end
   end
 
