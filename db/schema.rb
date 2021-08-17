@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_11_124735) do
+ActiveRecord::Schema.define(version: 2021_08_12_121539) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,13 +29,23 @@ ActiveRecord::Schema.define(version: 2021_02_11_124735) do
     t.string "topic"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "status"
+    t.integer "status", default: 0
+    t.integer "user_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.string "text"
+    t.integer "created_at", null: false
+    t.integer "updated_at", null: false
   end
 
   create_table "rounds", force: :cascade do |t|
     t.integer "game_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "round_type"
+    t.integer "rating"
+    t.integer "team"
   end
 
   create_table "speeches", force: :cascade do |t|
@@ -54,8 +64,18 @@ ActiveRecord::Schema.define(version: 2021_02_11_124735) do
     t.datetime "remember_created_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "name"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["name"], name: "index_users_on_name", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  end
+
+  create_table "users_notifications", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "notification_id"
+    t.boolean "read", default: false
+    t.integer "created_at", null: false
+    t.integer "updated_at", null: false
   end
 
 end
