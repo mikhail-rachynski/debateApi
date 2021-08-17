@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::API
   include Response
-  include Wssender
+  include Broadcasts
 
   respond_to :json
   before_action :process_token

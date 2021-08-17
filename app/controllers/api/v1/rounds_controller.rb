@@ -13,7 +13,7 @@ class Api::V1::RoundsController < ApplicationController
             .game_users
             .find_by(game: @round.game)
             .role == GameUser.roles.key(0)
-    sendStarRatingToWebSocket "set_rating"
+    pub_round_rating "set_rating"
   end
 
 end

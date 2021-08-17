@@ -4,16 +4,19 @@ class Game < ApplicationRecord
   has_many :game_users, dependent: :destroy
   has_many :users, through: :game_users
   belongs_to :user
-
   has_many :rounds, dependent: :destroy
 
+  def speeches
+    self.rounds.map {|round| round.speeches}
+  end
+
   def add_player(current_user)
-    player_limit = 1
-    find_duplicate_user = self.users.find_by id: current_user
+    players_limit = 9
+    find_duplicate_user = self.users.find_by id: current_user.id
     if find_duplicate_user.nil?
-      if self.users.count < player_limit && self.status == Game.statuses.key(0)
-        GameUser.create(game: self, user_id: current_user)
-        start_game if self.users.count == player_limit
+      if self.users.count < players_limit && self.status == Game.statuses.key(0)
+        GameUser.create(game: self, user_id: current_user.id)
+        start_game current_user if self.users.count == players_limit
         return @games = Game.all.order(:id)
       else
         @error = "Players limit reached"
@@ -43,22 +46,28 @@ class Game < ApplicationRecord
     end
   end
 
-  def start_game
+  def start_game(current_user)
     set_users_roles
     play_round(self)
     self.update(status: 1)
-    sendStatusToWebSocket "set_start_game_status", self
+    notification = Notification.create(text: "Game #{self.topic} started")
+    self.users.map do |user|
+      UsersNotification.create(user_id: user.id, notification: notification)
+      pub_new_notification current_user, notification if current_user.id === user.id
+    end
+
+    pub_status "set_start_game_status", self
   end
 
   def play_round(game)
     thisGame = Game.find(game.id)
     rounds_count = thisGame.rounds.length
-    round_duration = 10
+    round_duration = 300
 
     if rounds_count < 8
       round = Round.new(game: thisGame)
       round.set_round(rounds_count)
-      sendStartedRoundToWebSocket "round_start", round, round_duration
+      pub_started_round "round_start", round, round_duration
       Thread.new do
         end_time = Time.now.to_i+round_duration
         while true
@@ -71,7 +80,7 @@ class Game < ApplicationRecord
       end
     elsif rounds_count == 8
       self.update(status: 3)
-      sendStatusToWebSocket "set_finish_game_status", thisGame
+      pub_status "set_finish_game_status", thisGame
     end
   end
 

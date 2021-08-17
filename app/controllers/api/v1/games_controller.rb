@@ -15,10 +15,10 @@ class Api::V1::GamesController < ApplicationController
   end
 
   def create
-    game = current_user.games.create(items_params)
+    @game = current_user.games.create(items_params)
     @games = Game.all.order(:id)
-    sendGameToWebSocket "add_game", game
-    render 'index.json.jbuilder'
+    pub_game "add_game", @game
+
   end
 
   def update
@@ -28,19 +28,19 @@ class Api::V1::GamesController < ApplicationController
   def destroy
     @game = Game.find(params[:id])
     @game.destroy
-    sendDeletedGameIdToWebSocket "delete_game", @game.id
+    pub_deleted_game_id "delete_game", @game.id
   end
 
   def add_player
     @game = Game.find(params[:id])
-    @games = @game.add_player(current_user.id)
-    sendGameUsersToWebSocket "add_player", @game
+    @games = @game.add_player(current_user)
+    pub_game_users "add_player", @game
   end
 
   def delete_player
     @game = Game.find(params[:id])
     @game.delete_player(current_user.id)
-    sendGameUsersToWebSocket "delete_player", @game
+    pub_game_users "delete_player", @game
   end
 
   def status
@@ -51,7 +51,7 @@ class Api::V1::GamesController < ApplicationController
   private
 
   def items_params
-    params.permit(:topic, :kind, :score )
+    params.require(:game).permit(:topic, :kind, :score )
   end
 
   # def rating_calculation(rounds)

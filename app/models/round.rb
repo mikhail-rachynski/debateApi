@@ -9,7 +9,7 @@ class Round < ApplicationRecord
   scope :opposition, -> {where(team: 1)}
 
   belongs_to :game
-  has_many :speech, dependent: :destroy
+  has_many :speeches, dependent: :destroy
 
   def set_rating(value)
     self.update(rating: value)
